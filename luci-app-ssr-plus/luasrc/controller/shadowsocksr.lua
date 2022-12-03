@@ -76,7 +76,7 @@ end
 
 function check_status()
 	local e = {}
-	e.ret = luci.sys.call("/usr/bin/ssr-check www." .. luci.http.formvalue("set") .. ".com 80 3 1")
+	e.ret = luci.sys.call("/usr/bin/curl -I -m 5 -o /dev/null -s -w %{http_code} www." .. luci.http.formvalue("set") .. ".com")	
 	luci.http.prepare_content("application/json")
 	luci.http.write_json(e)
 end
