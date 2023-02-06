@@ -27,17 +27,19 @@ CURRENT_SERVER=$DEFAULT_SERVER
 #判断代理是否正常
 check_proxy() {
 	local result=0
+	
 	local try_count=$(uci_get_by_type global switch_try_count 3)
+	local status=''
 	for i in $(seq 1 $try_count); do
-		/usr/bin/ssr-check www.google.com 80 $switch_time 1
-		if [ "$?" == "0" ]; then
+		status=$(/usr/bin/curl -I -m $switch_time -o /dev/null -s -w %{http_code} www.google.com)
+		if [ $status == "200" ]; then
 			# echolog "Check Google Proxy Success, count=$i"
 			result=0
 			break
 		else
 			# echolog "Check Google Proxy Fail, count=$i"
-			/usr/bin/ssr-check www.baidu.com 80 $switch_time 1
-			if [ "$?" == "0" ]; then
+			status=$(/usr/bin/curl -I -m $switch_time -o /dev/null -s -w %{http_code} www.baidu.com)
+			if [ $status == "200" ]; then
 				result=1
 			else
 				result=2
